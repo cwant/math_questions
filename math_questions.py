@@ -34,9 +34,10 @@ class MathQuestions:
         parser.add_argument('--max', dest='max_value', type=int,
                             default=self.max_value,
                             help='Maximum value (double for subtraction)')
-        parser.add_argument('--must-have', dest='must_have', type=int,
+        parser.add_argument('--must-have', dest='must_have', type=str,
                             default=self.must_have,
-                            help='Must have this value')
+                            help='Must have this/these value ' +
+                            '(comma separated)')
         parser.add_argument('--squares', dest='squares',
                             default=self.squares,
                             action='store_true',
@@ -46,7 +47,9 @@ class MathQuestions:
         self.make_question = args.make_question
         self.min_value = args.min_value
         self.max_value = args.max_value
-        self.must_have = args.must_have
+
+        if args.must_have:
+            self.must_have = list(map(int, args.must_have.split(',')))
 
         self.squares = args.squares
         if self.squares:
@@ -80,9 +83,13 @@ class MathQuestions:
     def generate_must_have(self, x, y):
         if self.must_have is None:
             return (x, y)
+        must_have = self.must_have[0]
+        if len(self.must_have) > 1:
+            must_have = random.choice(self.must_have)
+
         if random.randrange(0, 2) == 0:
-            return (self.must_have, y)
-        return (x, self.must_have)
+            return (must_have, y)
+        return (x, must_have)
         
     def main(self):
         self.process_arguments()
